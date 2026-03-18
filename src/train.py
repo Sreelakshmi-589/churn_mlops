@@ -48,3 +48,6 @@ pipeline.fit(X_train, y_train)
 joblib.dump(pipeline, "models/pipeline.pkl")
 
 print("Pipeline training completed")
+
+# Save feature column names
+joblib.dump(X.columns.tolist(), "models/columns.pkl")
