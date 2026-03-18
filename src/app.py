@@ -1,4 +1,6 @@
-#building an api for the model
+
+
+# building an API for the pipeline model
 
 from fastapi import FastAPI
 from pydantic import BaseModel
@@ -9,12 +11,11 @@ import numpy as np
 # Create FastAPI app
 app = FastAPI()
 
-# Load trained model and scaler
-model = joblib.load("models/model.pkl")
-scaler = joblib.load("models/scaler.pkl")
+# Load pipeline (instead of model + scaler)
+pipeline = joblib.load("models/pipeline.pkl")
 
 
-# Define input schema using Pydantic
+# Define input schema
 class InputData(BaseModel):
     features: List[float]
 
@@ -29,15 +30,12 @@ def home():
 @app.post("/predict")
 def predict(data: InputData):
     try:
-        # Convert input list to numpy array
+        # Convert input to numpy array
         features = np.array(data.features).reshape(1, -1)
 
-        # Scale input using trained scaler
-        features_scaled = scaler.transform(features)
-
-        # Make prediction
-        prediction = model.predict(features_scaled)[0]
-
+        # Direct prediction (pipeline handles scaling)
+        prediction = pipeline.predict(features)[0]
+        
         # Return result
         return {"prediction": int(prediction)}
 
